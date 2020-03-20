@@ -50,8 +50,11 @@ pipeline {
                 }
             }
         }
-        
-        stage("Build operator image"){
+
+        stage("Build operator image") {
+            when {
+                expression { return "$OPERATOR_IMAGE_NAME".isEmpty()}
+            }
             steps {
                 dir("${WORKING_DIR}") {
                     sh """
@@ -61,7 +64,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage("Build CLI"){
             steps {
                 dir("${WORKING_DIR}") {
@@ -121,17 +124,18 @@ pipeline {
                     sh """
                         . ${GO_ENV_FILE}
                         
-                        BUILD=`echo \$RANDOM`
-                        export IMAGE_NAME=\${IMAGE_REGISTRY}/\${IMAGE_GROUP}/kogito-cloud-operator
-                        echo 'Image to use: \${IMAGE_NAME}:\${BUILD}'
+                        if [[ -z "\${OPERATOR_IMAGE_NAME}" ]]; then
+                            OPERATOR_IMAGE_TAG=`echo \$RANDOM`
+                            export OPERATOR_IMAGE_NAME=\${IMAGE_REGISTRY}/\${IMAGE_GROUP}/kogito-cloud-operator
+                            echo 'Image to use: \${OPERATOR_IMAGE_NAME}:\${OPERATOR_IMAGE_TAG}'
                         
-                        BUILT_IMAGE=`cat deploy/operator.yaml | grep image: | awk -F':' '{print \$2\":\"\$3}' | tr -d ' '`
-                        echo 'BUILT_IMAGE = \${BUILT_IMAGE}'
+                            BUILT_IMAGE=`cat deploy/operator.yaml | grep image: | awk -F':' '{print \$2\":\"\$3}' | tr -d ' '`
+                            echo 'BUILT_IMAGE = \${BUILT_IMAGE}'
                         
-                        podman tag \${BUILT_IMAGE} \${IMAGE_NAME}:\${BUILD}
-                        podman push \${IMAGE_NAME}:\${BUILD}
-                        
-                        make run-tests ci=${NAMESPACE_PREFIX} concurrent=${CONCURRENT_TESTS} tags="${TEST_TAGS}" operator_image=\${IMAGE_NAME} operator_tag=\${BUILD} maven_mirror=\${MAVEN_MIRROR_URL} build_image_version=\${BUILD_IMAGE_VERSION} services_image_version=\${SERVICES_IMAGE_VERSION} examples_uri=${EXAMPLES_URI} examples_ref=${EXAMPLES_REF} keep_namespace=${KEEP_NAMESPACE}
+                            podman tag \${BUILT_IMAGE} \${OPERATOR_IMAGE_NAME}:\${OPERATOR_IMAGE_TAG}
+                            podman push \${OPERATOR_IMAGE_NAME}:\${OPERATOR_IMAGE_TAG}
+                        fi
+                        make run-tests ci=${NAMESPACE_PREFIX} concurrent=${CONCURRENT_TESTS} tags="${TEST_TAGS}" operator_image=\${OPERATOR_IMAGE_NAME} operator_tag=\${OPERATOR_IMAGE_TAG} maven_mirror=\${MAVEN_MIRROR_URL} build_image_version=\${BUILD_IMAGE_VERSION} services_image_version=\${SERVICES_IMAGE_VERSION} examples_uri=${EXAMPLES_URI} examples_ref=${EXAMPLES_REF} keep_namespace=${KEEP_NAMESPACE}
                     """   
                 }
             }
