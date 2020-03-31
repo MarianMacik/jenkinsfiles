@@ -142,7 +142,7 @@ pipeline {
             post {
                 always {
                     dir("${WORKING_DIR}") {
-                        archiveArtifacts artifacts: 'test/logs/full/**/*.log', allowEmptyArchive: true
+                        archiveArtifacts artifacts: 'test/logs/full/**/*.log, test/logs/full/**/*.csv', allowEmptyArchive: true
                         junit testResults: 'test/logs/full/junit.xml', allowEmptyResults: true
                     }
                 }
