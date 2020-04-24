@@ -135,7 +135,19 @@ pipeline {
                             podman tag \${BUILT_IMAGE} \${OPERATOR_IMAGE_NAME}:\${OPERATOR_IMAGE_TAG}
                             podman push \${OPERATOR_IMAGE_NAME}:\${OPERATOR_IMAGE_TAG}
                         fi
-                        make run-tests ci=${NAMESPACE_PREFIX} concurrent=${CONCURRENT_TESTS} tags="${TEST_TAGS}" operator_image=\${OPERATOR_IMAGE_NAME} operator_tag=\${OPERATOR_IMAGE_TAG} maven_mirror=\${MAVEN_MIRROR_URL} build_image_version=\${BUILD_IMAGE_VERSION} services_image_version=\${SERVICES_IMAGE_VERSION} examples_uri=${EXAMPLES_URI} examples_ref=${EXAMPLES_REF} keep_namespace=${KEEP_NAMESPACE}
+                        make run-tests \\
+                             ci=${NAMESPACE_PREFIX} \\
+                             concurrent=${CONCURRENT_TESTS} \\
+                             tags="${TEST_TAGS}" \\
+                             operator_image=\${OPERATOR_IMAGE_NAME} \\
+                             operator_tag=\${OPERATOR_IMAGE_TAG} \\
+                             maven_mirror=\${MAVEN_MIRROR_URL} \\
+                             build_image_version=\${BUILD_IMAGE_VERSION} \\
+                             services_image_version=\${SERVICES_IMAGE_VERSION} \\
+                             examples_uri=${EXAMPLES_URI} \\
+                             examples_ref=${EXAMPLES_REF} \\
+                             keep_namespace=${KEEP_NAMESPACE} \\
+                             timeout=${TIMEOUT}
                     """   
                 }
             }
