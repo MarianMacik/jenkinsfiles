@@ -147,7 +147,10 @@ pipeline {
                              examples_uri=${EXAMPLES_URI} \\
                              examples_ref=${EXAMPLES_REF} \\
                              keep_namespace=${KEEP_NAMESPACE} \\
-                             timeout=${TIMEOUT}
+                             timeout=${TIMEOUT} \\
+                             runtime_application_image_registry=${IMAGE_REGISTRY} \\
+                             runtime_application_image_namespace=${IMAGE_GROUP} \\
+                             runtime_application_image_version=latest
                     """   
                 }
             }
