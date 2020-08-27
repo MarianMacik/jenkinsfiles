@@ -133,7 +133,6 @@ pipeline {
                     sh """
                         . ${GO_ENV_FILE}
                         
-                        podman login -u="\${REGISTRY_USER}" -p="\${REGISTRY_PASSWORD}" \${IMAGE_REGISTRY}
                         if [[ -z "\${OPERATOR_IMAGE_NAME}" ]]; then
                             OPERATOR_IMAGE_TAG=`echo \$RANDOM`
                             export OPERATOR_IMAGE_NAME=\${IMAGE_REGISTRY}/\${IMAGE_GROUP}/kogito-cloud-operator
