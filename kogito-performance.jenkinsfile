@@ -272,7 +272,7 @@ void installOpenshiftClient(){
 void installGraalVMWithNative(){
     echo "installGraalVMWithNative"
     sh """
-        GRAALVM_RELEASE_VERSION=19.3.1   
+        GRAALVM_RELEASE_VERSION=20.1.0
         rm -rf ${WORKSPACE}/graalvm*
         curl -LO https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-\${GRAALVM_RELEASE_VERSION}/graalvm-ce-java11-linux-amd64-\${GRAALVM_RELEASE_VERSION}.tar.gz
         tar xzf graalvm-ce-java11-linux-amd64-\${GRAALVM_RELEASE_VERSION}.tar.gz
