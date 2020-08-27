@@ -159,7 +159,8 @@ pipeline {
                              timeout=${TIMEOUT} \\
                              runtime_application_image_registry=${IMAGE_REGISTRY} \\
                              runtime_application_image_namespace=${IMAGE_GROUP} \\
-                             runtime_application_image_version=latest
+                             runtime_application_image_version=latest \\
+                             container_engine=podman
                     """   
                 }
             }
