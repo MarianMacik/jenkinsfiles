@@ -37,6 +37,8 @@ pipeline {
                     installGo()
                     installOperatorSDK()
                     installOpenshiftClient()
+                    installGraalVMWithNative()
+                    installMaven()
                     
                     sh """
                         . ${GO_ENV_FILE}
@@ -46,6 +48,13 @@ pipeline {
                         python2 --version
                         operator-sdk version
                         oc version
+
+                        echo \$JAVA_HOME
+                        echo \$GRAALVM_HOME
+                        
+                        java -version
+                        native-image --version
+                        mvn --version
                     """
                 }
             }
@@ -256,5 +265,36 @@ void installOpenshiftClient(){
         wget \${PACKAGE_URL}
         tar xzf ./\${PACKAGE_NAME}
         mv oc \${OSE_CLIENT_DIR}
+    """
+}
+
+void installGraalVMWithNative(){
+    echo "installGraalVMWithNative"
+    sh """
+        GRAALVM_RELEASE_VERSION=19.3.1   
+        rm -rf ${WORKSPACE}/graalvm*
+        curl -LO https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-\${GRAALVM_RELEASE_VERSION}/graalvm-ce-java11-linux-amd64-\${GRAALVM_RELEASE_VERSION}.tar.gz
+        tar xzf graalvm-ce-java11-linux-amd64-\${GRAALVM_RELEASE_VERSION}.tar.gz
+        
+        echo \"export GRAALVM_HOME=${WORKSPACE}/graalvm-ce-java11-\${GRAALVM_RELEASE_VERSION}\" >> ${GO_ENV_FILE}
+        echo \"export JAVA_HOME=${WORKSPACE}/graalvm-ce-java11-\${GRAALVM_RELEASE_VERSION}\" >> ${GO_ENV_FILE}
+        . ${GO_ENV_FILE}
+        echo 'export PATH=\${GRAALVM_HOME}/bin:\${PATH}' >> ${GO_ENV_FILE}
+        . ${GO_ENV_FILE}
+
+        gu install native-image
+    """
+}
+
+void installMaven(){
+    sh """       
+        MAVEN_RELEASE_VERSION=3.6.3
+        rm -rf ${WORKSPACE}/apache-maven-*
+        curl -LO https://mirrors.ocf.berkeley.edu/apache/maven/maven-3/\${MAVEN_RELEASE_VERSION}/binaries/apache-maven-\${MAVEN_RELEASE_VERSION}-bin.tar.gz
+        tar xzf apache-maven-\${MAVEN_RELEASE_VERSION}-bin.tar.gz
+        
+        echo \"export MVN_HOME=${WORKSPACE}/apache-maven-\${MAVEN_RELEASE_VERSION}\" >> ${GO_ENV_FILE}
+        . ${GO_ENV_FILE}
+        echo 'export PATH=\${PATH}:\${MVN_HOME}/bin' >> ${GO_ENV_FILE}
     """
 }
